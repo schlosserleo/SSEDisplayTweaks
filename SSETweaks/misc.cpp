@@ -165,7 +165,9 @@ namespace SDT
 				}
 			};
 
-			auto                     target(TESLoadScreen_LoadForm + (IAL::ver() >= VER_1_7 ? 0x3D : 0x36));
+			// the LoadForm code shifted in the 1.6.1130 creations patch (same
+			// site as 1.7.99); the register (rbp) and skip stay as the AE case
+			auto                     target(TESLoadScreen_LoadForm + (IAL::ver() >= VER_1_6_1130 ? 0x3D : 0x36));
 			LoadScreenLoadFormInject code(target);
 			ISKSE::GetBranchTrampoline().Write6Branch(target, code.get());
 
