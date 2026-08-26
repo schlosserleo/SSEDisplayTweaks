@@ -188,7 +188,7 @@ namespace SDT
 			if (auto mm = MenuManager::GetSingleton())
 			{
 				mm->GetMenuOpenCloseEventDispatcher().AddEventSink(MenuOpenCloseEventHandler::GetSingleton());
-				m_Instance.Debug("Added menu event sink");
+				gLog.Debug("Added menu event sink");
 			}
 			else
 			{
@@ -218,6 +218,8 @@ namespace SDT
 
 		BSFixedString customMenu("CustomMenu");
 		m_mstc_map.try_emplace(customMenu, MenuEvent::OnCustomMenu);
+
+		Debug("MSTC map: %zu entries", m_mstc_map.size());
 	}
 
 	auto MenuOpenCloseEventHandler::ReceiveEvent(
@@ -228,6 +230,13 @@ namespace SDT
 		if (a_evn)
 		{
 			auto code = IEvents::GetMenuEventCode(a_evn->menuName);
+
+			gLog.Debug(
+				"menu event: '%s' opening=%d code=%u",
+				a_evn->menuName.c_str(),
+				a_evn->opening ? 1 : 0,
+				stl::underlying(code));
+
 			IEvents::TriggerMenuEventAny(code, a_evn, a_dispatcher);
 		}
 

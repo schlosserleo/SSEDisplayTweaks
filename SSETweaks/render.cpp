@@ -934,6 +934,12 @@ namespace SDT
 		if (!mm)
 			return true;
 
+		Debug(
+			"menu limit: code=%u opening=%d paused=%d",
+			stl::underlying(a_code),
+			a_evn->opening ? 1 : 0,
+			mm->InPausedMenu() ? 1 : 0);
+
 		MenuFramerateLimitDescriptor ld;
 		if (mm->InPausedMenu())
 		{
