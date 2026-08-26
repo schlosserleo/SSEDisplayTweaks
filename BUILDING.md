@@ -11,20 +11,19 @@ The solution expects these siblings next to the repo:
 ```
 I:\source\
   SSEDisplayTweaks\        this repo
-  sse-build-resources\     reconstructed support lib (local git repo, no remote)
+  sse-build-resources\     https://github.com/schlosserleo/sse-build-resources
   sparse-map\              https://github.com/Tessil/sparse-map (headers only)
   DirectXTK\               https://github.com/microsoft/DirectXTK
 ```
 
 ### sse-build-resources
 
-Reconstructed from the `clayne/sse-build-resources` fork (upstream deleted) +
-SKSE64 2.0.17 sources + the bundled `skse64-patch.zip`, then modernized locally:
-format-5 Address Library support, SKSE 2.3.0 runtime constants and
-`SKSEPluginVersionData` layout, versioned `OpenLog`/`GetLogPath`, and a number
-of shim headers the fork was missing. See that repo's log for details. The
-vendored `skse64/` tree is committed there — do not re-extract it from the
-patch zip, it contains local fixes.
+Get it from <https://github.com/schlosserleo/sse-build-resources> — a
+community continuation of the deleted upstream repo (based on the clayne
+snapshot), modernized for 1.7.99 / SKSE 2.3.0 / current MSVC. Follow its
+README to set up the vendored `skse64/` tree (extract SKSE64 2.0.17 `src`
+into it and apply the bundled `skse64-patch.zip` — the patch contains all
+local fixes, including new files).
 
 ### DirectXTK
 
