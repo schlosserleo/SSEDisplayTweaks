@@ -303,7 +303,7 @@ namespace SDT
 	void DRender::LoadConfig()
 	{
 		IConfigGame gameConfig(
-			IAL::ver() >= VER_1_6_659 ?
+			GET_EXE_VERSION_SUB(ISKSE::GetSingleton().GetRuntimeVersion()) == RUNTIME_TYPE_GOG ?
 				SKYRIM_PREFS_INI_FILE_GOG :
                 SKYRIM_PREFS_INI_FILE);
 

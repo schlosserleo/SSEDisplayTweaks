@@ -140,7 +140,14 @@ namespace SDT
 					jne(load);
 					jmp(ptr[rip + retnSkipLabel]);
 					L(load);
-					mov(rcx, rbp);
+					if (IAL::ver() >= VER_1_7)
+					{
+						mov(rcx, r15);
+					}
+					else
+					{
+						mov(rcx, rbp);
+					}
 					call(ptr[rip + callUnkFnLabel]);
 					jmp(ptr[rip + retnOKLabel]);
 
@@ -148,7 +155,7 @@ namespace SDT
 					dq(targetAddr + 0x8);
 
 					L(retnSkipLabel);
-					dq(targetAddr + (IAL::IsAE() ? 0x4ED : 0x4EC));
+					dq(targetAddr + (IAL::ver() >= VER_1_7 ? 0x557 : IAL::IsAE() ? 0x4ED : 0x4EC));
 
 					L(callHookFnLabel);
 					dq(std::uintptr_t(TESLoadScreen_LoadForm_Hook));
@@ -158,7 +165,7 @@ namespace SDT
 				}
 			};
 
-			auto                     target(TESLoadScreen_LoadForm + 0x36);
+			auto                     target(TESLoadScreen_LoadForm + (IAL::ver() >= VER_1_7 ? 0x3D : 0x36));
 			LoadScreenLoadFormInject code(target);
 			ISKSE::GetBranchTrampoline().Write6Branch(target, code.get());
 
@@ -169,7 +176,13 @@ namespace SDT
 
 		if (m_conf.disable_actor_fade)
 		{
-			if (IAL::IsAE())
+			if (IAL::ver() >= VER_1_7)
+			{
+				// jmp 0x5A (-> +0x52D, the no-fade path), replaces test rdi,rdi; je
+				constexpr std::uint8_t data[] = { 0xEB, 0x5A, 0x90, 0x90, 0x90 };
+				safe_write(ActorFade_a + 0x4D1, data, sizeof(data));
+			}
+			else if (IAL::IsAE())
 			{
 				constexpr std::uint8_t data1[] = { 0xEB, 0x61, 0x90, 0x90, 0x90, 0x90, 0x90 };
 				safe_write(ActorFade_a + 0x4CA, data1, sizeof(data1));

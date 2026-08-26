@@ -368,3 +368,6 @@ FodyWeavers.xsd
 /x64_v142/common_1_5_97_vc14/PreRelease MT
 /x64_v142/common_1_5_97_vc14/ReleaseAVX2 MT
 /x64_v143/common_1_5_97_vc14/Release MT/common_1_5_97_vc14.lib
+
+# local toolset build outputs
+/x64_v*/

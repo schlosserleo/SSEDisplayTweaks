@@ -177,7 +177,7 @@ namespace SDT
 	UIStringHolder* IEvents::PopulateUIStringHolder_Hook(void* a_dst)
 	{
 		auto dst = m_Instance.PopulateUIStringHolder_O(a_dst);
-		m_Instance.CreateMSTCMap();
+		m_Instance.CreateMSTCMap(dst);
 		return dst;
 	}
 
@@ -203,9 +203,11 @@ namespace SDT
 		m_Instance.TriggerEvent(Event::OnMessage, static_cast<void*>(a_message));
 	}
 
-	void IEvents::CreateMSTCMap()
+	void IEvents::CreateMSTCMap(UIStringHolder* a_holder)
 	{
-		if (auto sh = UIStringHolder::GetSingleton())
+		// on 1.7.99+ the hooked call site runs before the game stores the
+		// singleton pointer, so use the pointer returned by the populate call
+		if (auto sh = a_holder ? a_holder : UIStringHolder::GetSingleton())
 		{
 			for (auto& e : s_mstc_map_desc)
 			{

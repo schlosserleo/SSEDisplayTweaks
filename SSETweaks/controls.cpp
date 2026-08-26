@@ -362,7 +362,7 @@ namespace SDT
 
 		LogPatchBegin(CKEY_AUTO_VANITY_CAMERA);
 		{
-			auto                  addr(AutoVanityState_Update + (IAL::IsAE() ? OffsetsAE::AutoVanityState_Update_IncrementAngle : Offsets::AutoVanityState_Update_IncrementAngle));
+			auto                  addr(AutoVanityState_Update + (IAL::ver() >= VER_1_7 ? 0xED : IAL::IsAE() ? OffsetsAE::AutoVanityState_Update_IncrementAngle : Offsets::AutoVanityState_Update_IncrementAngle));
 			AutoVanityStateUpdate code(addr, std::uintptr_t(std::addressof(m_gv.fAutoVanityIncrement)));
 			ISKSE::GetBranchTrampoline().Write6Branch(addr, code.get());
 		}
@@ -409,7 +409,9 @@ namespace SDT
 		{
 			auto addr(
 				PlayerControls_InputEvent_ProcessEvent +
-				(IAL::IsAE() ?
+				(IAL::ver() >= VER_1_7 ?
+			         0x41E :
+                 IAL::IsAE() ?
 			         OffsetsAE::PlayerControls_InputEvent_ProcessEvent_LoadDLSpeed :
                      Offsets::PlayerControls_InputEvent_ProcessEvent_LoadDLSpeed));
 
@@ -431,7 +433,13 @@ namespace SDT
 				Xbyak::Label retnLabel;
 				Xbyak::Label callLabel;
 
-				if (IAL::IsAE())
+				if (IAL::ver() >= VER_1_7)
+				{
+					// replaces: lea rdx,[rdi+0x2C]; mov rcx,rdi; call <fn>
+					// the hook forwards to <fn> itself
+					mov(rcx, rdi);
+				}
+				else if (IAL::IsAE())
 				{
 					movss(dword[rdi + 0x4], xmm1);
 					mov(rcx, rbp);
@@ -446,14 +454,14 @@ namespace SDT
 				jmp(ptr[rip + retnLabel]);
 
 				L(retnLabel);
-				dq(a_targetAddr + (IAL::IsAE() ? 0xD9 : 0xD));
+				dq(a_targetAddr + (IAL::ver() >= VER_1_7 ? 0xC : IAL::IsAE() ? 0xD9 : 0xD));
 
 				L(callLabel);
 				dq(std::uintptr_t(PlayerControls_InputEvent_ProcessEvent_Edge_Hook));
 			}
 		};
 
-		auto               addr(PlayerControls_InputEvent_ProcessEvent + (IAL::IsAE() ? 0x58C : 0x1E6));
+		auto               addr(PlayerControls_InputEvent_ProcessEvent + (IAL::ver() >= VER_1_7 ? 0x43D : IAL::IsAE() ? 0x58C : 0x1E6));
 		DialogueLookSmooth code(addr);
 		ISKSE::GetBranchTrampoline().Write5Branch(addr, code.get());
 
@@ -643,7 +651,7 @@ namespace SDT
 					jmp(ptr[rip + retnLabel]);
 
 					L(retnLabel);
-					dq(a_targetAddr + 0xA);
+					dq(a_targetAddr + (IAL::ver() >= VER_1_7 ? 0x12 : 0xA));
 
 					L(timerLabel);
 					dq(std::uintptr_t(Game::g_frameTimer));
@@ -757,7 +765,7 @@ namespace SDT
 
 			LogPatchBegin("VerticalLookSensitivity (Dragon)");
 			{
-				auto     addr(VerticalLookSens_Dragon + 0x53);
+				auto     addr(VerticalLookSens_Dragon + (IAL::ver() >= VER_1_7 ? 0x99 : 0x53));
 				Assembly code(addr);
 				ISKSE::GetBranchTrampoline().Write6Branch(addr, code.get());
 			}
@@ -765,7 +773,7 @@ namespace SDT
 
 			LogPatchBegin("VerticalLookSensitivity (Horse)");
 			{
-				auto     addr(VerticalLookSens_Horse + 0x53);
+				auto     addr(VerticalLookSens_Horse + (IAL::ver() >= VER_1_7 ? 0x99 : 0x53));
 				Assembly code(addr);
 				ISKSE::GetBranchTrampoline().Write6Branch(addr, code.get());
 			}
@@ -969,8 +977,24 @@ namespace SDT
 
 	void DControls::PlayerControls_InputEvent_ProcessEvent_Edge_Hook(PlayerControls* a_controls)
 	{
-		m_Instance.m_Sub_140707110(a_controls);
+		if (IAL::ver() >= VER_1_7)
+		{
+			// the replaced call site consumes the look input, so scale first
+			// and forward to the original function afterwards; on 1.7+ it takes
+			// the look input pointer as a second argument
+			ApplyDialogueLookEdgeScale(a_controls);
+			reinterpret_cast<void (*)(PlayerControls*, NiPoint2*)>(
+				m_Instance.m_Sub_140707110)(a_controls, std::addressof(a_controls->lookInput));
+		}
+		else
+		{
+			m_Instance.m_Sub_140707110(a_controls);
+			ApplyDialogueLookEdgeScale(a_controls);
+		}
+	}
 
+	void DControls::ApplyDialogueLookEdgeScale(PlayerControls* a_controls)
+	{
 		float lookStart = *m_Instance.m_gv.fPCDialogueLookStart;
 		if (lookStart <= 0.0f)
 		{

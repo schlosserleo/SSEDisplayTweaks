@@ -63,6 +63,7 @@ namespace SDT
 		static void MouseSens_AE_Hook(FirstPersonState* a_fpState);
 		static void AddMapCameraPos_Hook(MapCamera* a_camera, float x, float y, float z);
 		static void PlayerControls_InputEvent_ProcessEvent_Edge_Hook(PlayerControls* a_controls);
+		static void ApplyDialogueLookEdgeScale(PlayerControls* a_controls);
 
 		struct
 		{
@@ -79,10 +80,10 @@ namespace SDT
 		decltype(&AddMapCameraPos_Hook) addCameraPos_o;
 
 		inline static auto MT_Inject                                     = IAL::Addr(AID::UnkMovFunc0, 0, Offsets::MT_Inject, 0);
-		inline static auto MT_Inject_AE1                                 = IAL::Addr(0, 41996, 0, 0x389);
-		inline static auto MT_Inject_AE2                                 = IAL::Addr(0, 41996, 0, 0x880);
+		inline static auto MT_Inject_AE1                                 = IAL::Addr(0, 41996, 0, IAL::ver() >= VER_1_7 ? 0x398 : 0x389);
+		inline static auto MT_Inject_AE2                                 = IAL::Addr(0, 41996, 0, IAL::ver() >= VER_1_7 ? 0x8A1 : 0x880);
 		inline static auto FPSittingRotationSpeed                        = IAL::Addr<float*>(AID::UnkFloat0, 382476);
-		inline static auto FMHS_Inject                                   = IAL::Addr(AID::UnkMM0, 50724, Offsets::FMHS_Inject, 0x125);
+		inline static auto FMHS_Inject                                   = IAL::Addr(AID::UnkMM0, 50724, Offsets::FMHS_Inject, IAL::ver() >= VER_1_7 ? 0x13A : 0x125);
 		inline static auto MapLookHandler_ProcessButton                  = IAL::Addr<std::uintptr_t>(AID::MapLookHandler_ProcessButton, 53062);
 		inline static auto AutoVanityState_Update                        = IAL::Addr<std::uintptr_t>(AID::AutoVanityState_Update, 50709);
 		inline static auto PlayerControls_InputEvent_ProcessEvent        = IAL::Addr<std::uintptr_t>(AID::PlayerControls_InputEvent_ProcessEvent, 42338);
@@ -99,7 +100,7 @@ namespace SDT
 
 		static void replace_st_timer(std::uintptr_t a_addr);
 
-		inline static auto m_Sub_140707110 = IAL::Addr<decltype(PlayerControls_InputEvent_ProcessEvent_Edge_Hook)*>(41292, 42372);  // AE: unreferenced
+		inline static auto m_Sub_140707110 = IAL::Addr<decltype(PlayerControls_InputEvent_ProcessEvent_Edge_Hook)*>(41292, IAL::ver() >= VER_1_7 ? 42354 : 42372);  // AE: unreferenced; 1.7+: void fn(PlayerControls*, NiPoint2* a_lookInput)
 
 		static DControls m_Instance;
 	};

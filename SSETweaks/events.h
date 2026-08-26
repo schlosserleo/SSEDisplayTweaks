@@ -164,7 +164,7 @@ namespace SDT
 
 		static void MessageHandler(SKSEMessagingInterface::Message* a_message);
 
-		void CreateMSTCMap();
+		void CreateMSTCMap(UIStringHolder* a_holder);
 
 		std::unordered_map<Event, std::vector<_EventTriggerDescriptor>>          m_events;
 		std::unordered_map<MenuEvent, std::vector<_MenuEventCallbackDescriptor>> m_menu_events;
@@ -174,8 +174,8 @@ namespace SDT
 
 		PopulateUIStringHolder_t PopulateUIStringHolder_O;
 
-		inline static const auto LoadPluginINI_C          = IAL::Addr(AID::Init0, 36547, Offsets::LoadPluginINI_C, IAL::ver() >= VER_1_6_342 ? IAL::ver() >= VER_1_6_629 ? 0xAB1 : 0xA91 : 0xA71);
-		inline static const auto PopulateUIStringHolder_C = IAL::Addr(AID::Init0, 36547, Offsets::PopulateUIStringHolder_C, IAL::ver() >= VER_1_6_342 ? IAL::ver() >= VER_1_6_629 ? 0xEC4 : 0xEA4 : 0xE85);
+		inline static const auto LoadPluginINI_C          = IAL::Addr(AID::Init0, 36547, Offsets::LoadPluginINI_C, IAL::ver() >= VER_1_6_1130 ? 0x9A1 : IAL::ver() >= VER_1_6_629 ? 0xAB1 : IAL::ver() >= VER_1_6_342 ? 0xA91 : 0xA71);
+		inline static const auto PopulateUIStringHolder_C = IAL::Addr(AID::Init0, 36547, Offsets::PopulateUIStringHolder_C, IAL::ver() >= VER_1_7 ? 0x7E : IAL::ver() >= VER_1_6_1130 ? 0xDB4 : IAL::ver() >= VER_1_6_629 ? 0xEC4 : IAL::ver() >= VER_1_6_342 ? 0xEA4 : 0xE85);
 
 		mstcMap_t m_mstc_map;
 
