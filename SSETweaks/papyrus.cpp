@@ -184,7 +184,17 @@ namespace SDT
 
 	const wchar_t* DPapyrus::StatsRendererCallback2()
 	{
-		auto vm = (*g_skyrimVM)->GetClassRegistry();
+		auto vmi = *g_skyrimVM;
+		if (!vmi)
+		{
+			return L"";
+		}
+
+		auto vm = vmi->GetClassRegistry();
+		if (!vm)
+		{
+			return L"";
+		}
 
 		return vm->overstressed ? L"VM Overstressed" : L"";
 	}
@@ -194,7 +204,9 @@ namespace SDT
 		if (m_Instance.m_conf.stats_enabled)
 			m_Instance.m_OSDDriver->AddStatsCallback(StatsRendererCallback1);
 
-		if (m_Instance.m_conf.warn_overstressed)
+		// the location of the overstressed flag within the VM is not known
+		// on 1.7.99+, keep the warning disabled there
+		if (m_Instance.m_conf.warn_overstressed && IAL::ver() < VER_1_7)
 			m_Instance.m_OSDDriver->AddStatsCallback(StatsRendererCallback2);
 	}
 
