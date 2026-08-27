@@ -1,8 +1,8 @@
 # SSEDisplayTweaks
 
 Fork of [SlavicPotato/SSEDisplayTweaks](https://github.com/SlavicPotato/SSEDisplayTweaks)
-with support for Skyrim Special Edition **1.7.99** (v0.5.17+). Supported
-runtimes: 1.5.23–1.5.97, 1.6.317–1.6.1179 and 1.7.99.
+with support for Skyrim Special Edition **1.7.99/1.7.104** (v0.5.17+). Supported
+runtimes: 1.5.23–1.5.97, 1.6.317–1.6.1179, 1.7.99 and 1.7.104.
 
 Original mod page: <https://www.nexusmods.com/skyrimspecialedition/mods/34705>
 
